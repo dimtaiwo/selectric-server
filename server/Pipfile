@@ -7,6 +7,9 @@ name = "pypi"
 flask = "*"
 flask-pymongo = "*"
 dnspython = "*"
+pyjwt = "*"
+bcrypt = "*"
+python-bsonjs = "*"
 
 [dev-packages]
 
