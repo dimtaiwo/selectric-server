@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 import bcrypt
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 import json
 from bson import json_util
 # from auth.auth import create_access_token
@@ -28,7 +29,7 @@ def parse_json(data):
 
 
 app = Flask(__name__)
-
+CORS(app)
 bcrypt = Bcrypt(app)
 
 app.config['MONGO_DBNAME'] = 'selectric'
@@ -48,7 +49,7 @@ def login():
     found_user = mongo.db.selectric.find_one({"email": f'{email}'})
     if found_user and bcrypt.check_password_hash(found_user['password'], password):
         token = create_access_token(data=parse_json(found_user))
-        return parse_json(token), 200
+        return {"token": parse_json(token)}, 200
 
 # register post route
 
@@ -59,14 +60,14 @@ def register():
     email = data['email']
     username = data['username']
     password = data['password']
-
+    print(data)
     hashed_pass = bcrypt.generate_password_hash(password).decode('utf8')
 
     new_user = {'email': email, 'username': username, 'password': hashed_pass}
     mongo.db.selectric.save(new_user)
     token = create_access_token(data=parse_json(new_user))
     print(token)
-    return parse_json(token), 201
+    return {"token": parse_json(token)}, 201
 
 
 # get user by id
