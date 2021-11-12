@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "043078212e617d92b274ff688f8742ee4979f0b1d8c6d23046f547cb724187ea"
+            "sha256": "d940d923563956150d9ad1775664e0d1b1f266e5a02e4749d1d91fa423c06a61"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -92,14 +92,6 @@
             "markers": "python_version >= '3.6'",
             "version": "==8.0.3"
         },
-        "colorama": {
-            "hashes": [
-                "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b",
-                "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"
-            ],
-            "markers": "platform_system == 'Windows'",
-            "version": "==0.4.4"
-        },
         "dnspython": {
             "hashes": [
                 "sha256:95d12f6ef0317118d2a1a6fc49aac65ffec7eb8087474158f42f26a639135216",
@@ -138,6 +130,14 @@
             ],
             "index": "pypi",
             "version": "==2.3.0"
+        },
+        "gunicorn": {
+            "hashes": [
+                "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e",
+                "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"
+            ],
+            "index": "pypi",
+            "version": "==20.1.0"
         },
         "itsdangerous": {
             "hashes": [
