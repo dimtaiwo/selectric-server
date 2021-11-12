@@ -88,6 +88,27 @@ def user():
         mongo.db.selectric.delete_one(found_user)
         return '<h1>successfully deleted</h1>',201
 
+@app.route('/cars',methods=['GET','POST'])
+def cars():
+    if request.method == 'GET':
+        found_cars = mongo.db.cars.find({})
+        return jsonify(parse_json(found_cars)), 200
+    if request.method == 'POST':
+        data = request.get_json()
+        new_car = {
+            "brand": data['brand'],
+            "model": data['model'],
+            "range_km": data['range_km'],
+            "efficiency_whkm": data['efficiency_whkm'],
+            "fast_charge_kmh": data['fast_charge_kmh'],
+            "rapid_charge": data['rapid_charge'],
+            "power_train": data['power_train'],
+            "plug_type": data['plug_type'],
+            "body_style": data['body_style'],
+           
+        }
+        mongo.db.cars.save(new_car)
+        return '<h1>Successfully added</h1>',201
 
 if __name__ == '__main__':
     app.run(debug=True)
