@@ -70,9 +70,23 @@ def register():
 
 
 # get user by id
-@app.route('/user', methods=['POST', 'PATCH', 'DELETE'])
+@app.route('/user', methods=['GET', 'PATCH', 'DELETE'])
 def user():
-    return
+    token = request.headers['auth-token']
+    secret_key = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+    algorithm = "HS256"
+    user = jwt.decode(token, key=secret_key, algorithms=algorithm)
+    found_user = mongo.db.selectric.find_one({"email":user['email']})
+    if request.method == 'GET':
+        return parse_json(found_user),200
+    if request.method == 'PATCH':
+        for update in request.get_json()['updates']:
+            found_user[f'{update["name"]}'] = update['value']
+        mongo.db.selectric.save(found_user)
+        return parse_json(found_user), 201
+    if request.method == 'DELETE':
+        mongo.db.selectric.delete_one(found_user)
+        return '<h1>successfully deleted</h1>',201
 
 
 if __name__ == '__main__':
