@@ -20,6 +20,7 @@ pytest = "*"
 
 [scripts]
 dev = "bash -c \"export FLASK_ENV='development ' && flask run\""
-
+test = "pytest ."
+coverage = "pytest --cov-report term-missing --cov=."
 [requires]
 python_version = "3.10"
