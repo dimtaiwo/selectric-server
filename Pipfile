@@ -12,6 +12,7 @@ bcrypt = "*"
 python-bsonjs = "*"
 flask-bcrypt = "*"
 flask-cors = "*"
+gunicorn = "*"
 
 [dev-packages]
 pytest-cov = "*"
