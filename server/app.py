@@ -87,7 +87,7 @@ def user():
         return parse_json(found_user), 201
     if request.method == 'DELETE':
         mongo.db.selectric.delete_one(found_user)
-        return '<h1>successfully deleted</h1>',201
+        return '<h1>successfully deleted</h1>',200
 
 @app.route('/cars',methods=['GET','POST'])
 def cars():
