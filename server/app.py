@@ -5,6 +5,7 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import json
 from bson import json_util
+from werkzeug import exceptions
 # from auth.auth import create_access_token
 
 
@@ -110,6 +111,36 @@ def cars():
         }
         mongo.db.cars.save(new_car)
         return '<h1>Successfully added</h1>',201
+
+
+# Error Handling
+@app.errorhandler(exceptions.NotFound)
+def handle_404(err):
+    return {'message': f'Oops! {err}'}, 404
+
+@app.errorhandler(exceptions.BadRequest)
+def handle_400(err):
+    return {'message': f'Oops! {err}'}, 400
+
+@app.errorhandler(exceptions.InternalServerError)
+def handle_500(err):
+    return {'message': f"It's not you, it's us"}, 500
+
+@app.errorhandler(exceptions.Unauthorised)
+def handle_401(err):
+    return {'message': f"You shouldn't be here"}, 401
+
+@app.errorhandler(exceptions.Forbidden)
+def handle_403(err):
+    return {'message': f"You don't have permission for this"}, 403
+
+@app.errorhandler(exceptions.MethodNotAllowed)
+def handle_405(err):
+    return {'message': f"Oops! {err}"}, 405
+
+@app.errorhandler(exceptions.RequestTimeout)
+def handle_408(err):
+    return {'message': f"Your request has timed out"}, 408
 
 if __name__ == '__main__':
     app.run(debug=True)
