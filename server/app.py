@@ -94,7 +94,7 @@ def user():
         return '<h1>successfully deleted</h1>', 200
 
 
-@app.route('file/<filename>')
+@app.route('/file/<filename>')
 def file(filename):
     mongo.send_file(filename)
 
@@ -123,4 +123,4 @@ def cars():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
