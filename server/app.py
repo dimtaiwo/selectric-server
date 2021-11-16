@@ -77,19 +77,29 @@ def user():
     secret_key = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
     algorithm = "HS256"
     user = jwt.decode(token, key=secret_key, algorithms=algorithm)
-    found_user = mongo.db.selectric.find_one({"email":user['email']})
+    found_user = mongo.db.selectric.find_one({"email": user['email']})
     if request.method == 'GET':
-        return parse_json(found_user),200
+        return parse_json(found_user), 200
     if request.method == 'PATCH':
         for update in request.get_json()['updates']:
             found_user[f'{update["name"]}'] = update['value']
+            if 'profile_image' in request.files:
+                profile_image = request.files['profile_image']
+                mongo.save_file(profile_image.filename, profile_image)
+                found_user['profile_image_name'] = profile_image
         mongo.db.selectric.save(found_user)
         return parse_json(found_user), 201
     if request.method == 'DELETE':
         mongo.db.selectric.delete_one(found_user)
-        return '<h1>successfully deleted</h1>',200
+        return '<h1>successfully deleted</h1>', 200
 
-@app.route('/cars',methods=['GET','POST'])
+
+@app.route('file/<filename>')
+def file(filename):
+    mongo.send_file(filename)
+
+
+@app.route('/cars', methods=['GET', 'POST'])
 def cars():
     if request.method == 'GET':
         found_cars = mongo.db.cars.find({})
@@ -106,10 +116,11 @@ def cars():
             "power_train": data['power_train'],
             "plug_type": data['plug_type'],
             "body_style": data['body_style'],
-           
+
         }
         mongo.db.cars.save(new_car)
-        return '<h1>Successfully added</h1>',201
+        return '<h1>Successfully added</h1>', 201
+
 
 if __name__ == '__main__':
     app.run(debug=True)
