@@ -84,12 +84,12 @@ def login():
     if len(password) < 2 or password == None:
         return {"message": "Enter a valid password"}, 403
     found_user = mongo.db.selectric.find_one({"email": f'{email}'})
-
+    if not found_user:
+        return {"message": "wrong login credentials"}, 400
     if found_user and bcrypt.check_password_hash(found_user['password'], password):
         token = create_access_token(data=parse_json(found_user))
         return {"token": parse_json(token)}, 200
-    else:
-        return {"message": "wrong login credentials"}, 400
+
 
 # register post route
 
