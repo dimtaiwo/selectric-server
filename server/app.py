@@ -117,10 +117,10 @@ def register():
         return {"message": "Enter a valid password"}, 403
     if len(username) < 2 or username == None:
         return {"message": "Enter a valid username"}, 403
-    found_user = mongo.db.selectric.find_one({"email": "email"})
+    found_user = mongo.db.selectric.find_one({"email": f"{email}"})
     if found_user:
         return {"message": "Email already registered"}
-    hashed_pass = bcrypt.generate_password_hash(password).decode('utf8')
+    hashed_pass = bcrypt.generate_password_hash(password).decode('utf-8')
 
     new_user = {'email': email, 'username': username,
                 'password': hashed_pass}
