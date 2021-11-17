@@ -89,6 +89,8 @@ def login():
     if found_user and bcrypt.check_password_hash(found_user['password'], password):
         token = create_access_token(data=parse_json(found_user))
         return {"token": parse_json(token)}, 200
+    else:
+        return {"message": "wrong credential"}
 
 
 # register post route
