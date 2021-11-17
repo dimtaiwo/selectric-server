@@ -4,6 +4,7 @@ import bcrypt
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import json
+import re
 from bson import json_util
 # from auth.auth import create_access_token
 
@@ -31,25 +32,62 @@ def parse_json(data):
 app = Flask(__name__)
 CORS(app)
 bcrypt = Bcrypt(app)
-
 app.config['MONGO_DBNAME'] = 'selectric'
 app.config['MONGO_URI'] = 'mongodb+srv://dimeji:kushalpatel@cluster0.tbprf.mongodb.net/selectric?ssl=true&ssl_cert_reqs=CERT_NONE'
 mongo = PyMongo(app)
 secret = 'brodie-secret'
 
 
+class SchemaValidator(object):
+    def __init__(self, response={}):
+        self.response = response
+
+    def isTrue(self):
+        errorMessages = []
+        try:
+            username = self.response.get("username", None)
+            if username is None or len(username <= 1):
+                raise Exception("Error")
+        except Exception as e:
+            'username is required'
+        try:
+            password = self.response.get("username", None)
+            if password is None or len(password <= 1):
+                raise Exception("Error")
+        except Exception as e:
+            errorMessages.append('password is required')
+        try:
+            email = self.response.get("email", None)
+            if email is None or len(password <= 1):
+                raise Exception("Error")
+        except Exception as e:
+            errorMessages.append('email is required')
+        return errorMessages
+
+
 # login post route
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    # _instance = SchemaValidator(response=data)
+    # response = _instance.isTrue()
+    # if len(response) > 0:
+    #     _ = {
+    #         "status": "error",
+    #         "message": response
+    #     }
+    #     return _, 400
     email = data['email']
     password = data['password']
-    print(data)
-    print(email)
+    if len(email) < 2 or email == None:
+        return {"message": "Enter a valid email"}, 403
+    if len(password) < 2 or password == None:
+        return {"message": "Enter a valid password"}, 403
     found_user = mongo.db.selectric.find_one({"email": f'{email}'})
     if found_user and bcrypt.check_password_hash(found_user['password'], password):
         token = create_access_token(data=parse_json(found_user))
         return {"token": parse_json(token)}, 200
+
 
 # register post route
 
@@ -57,20 +95,39 @@ def login():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()  # request.json
+    # _instance = SchemaValidator(response=data)
+    # response = _instance.isTrue()
+    # if len(response) > 0:
+    #     _ = {
+    #         "message": response
+    #     }
+    #     return _, 403
+
     email = data['email']
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     username = data['username']
     password = data['password']
-    print(data)
+    if len(email) < 2 or email == None or not(re.fullmatch(email_pattern, email)):
+        return {"message": "Enter a valid email"}, 403
+    if len(password) < 2 or password == None:
+        return {"message": "Enter a valid password"}, 403
+    if len(username) < 2 or username == None:
+        return {"message": "Enter a valid username"}, 403
+    found_user = mongo.db.selectric.find_one({"email": "email"})
+    if found_user:
+        return {"message": "Email already registered"}
     hashed_pass = bcrypt.generate_password_hash(password).decode('utf8')
 
-    new_user = {'email': email, 'username': username, 'password': hashed_pass}
+    new_user = {'email': email, 'username': username,
+                'password': hashed_pass}
     mongo.db.selectric.save(new_user)
     token = create_access_token(data=parse_json(new_user))
     print(token)
     return {"token": parse_json(token)}, 201
 
+    # get user by id
 
-# get user by id
+
 @app.route('/user', methods=['GET', 'PATCH', 'DELETE'])
 def user():
     token = request.headers['auth-token']
@@ -92,11 +149,6 @@ def user():
     if request.method == 'DELETE':
         mongo.db.selectric.delete_one(found_user)
         return '<h1>successfully deleted</h1>', 200
-
-
-@app.route('/file/<filename>')
-def file(filename):
-    mongo.send_file(filename)
 
 
 @app.route('/cars', methods=['GET', 'POST'])
