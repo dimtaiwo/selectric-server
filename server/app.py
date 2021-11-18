@@ -90,7 +90,7 @@ def login():
         token = create_access_token(data=parse_json(found_user))
         return {"token": parse_json(token)}, 200
     else:
-        return {"message": "wrong credential"}
+        return {"message": "wrong credential"}, 400
 
 
 # register post route
